@@ -101,7 +101,7 @@ bintray {
     configurations = ['archives']
     pkg {
         repo = "xb"  // 上传到创建的仓库
-        name = "XbUtils"  // 发布到Bintray上的项目名字
+        name = "XbUtils"  // 发布到Bintray上的项目名
         userOrg = user
         websiteUrl = projectUrl
         vcsUrl = gitUrl
