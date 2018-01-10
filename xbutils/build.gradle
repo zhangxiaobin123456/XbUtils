@@ -1,9 +1,9 @@
 apply plugin: 'com.android.library'
-
+apply plugin: 'com.github.dcendents.android-maven'
+apply plugin: 'com.jfrog.bintray'
 android {
     compileSdkVersion 25
     buildToolsVersion "27.0.1"
-
     defaultConfig {
         minSdkVersion 15
         targetSdkVersion 25
@@ -21,5 +21,91 @@ android {
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     testCompile 'junit:junit:4.12'
-    compile 'com.android.support:appcompat-v7:25.3.1'
+}
+//版本
+version = "1.0.1"
+// 项目主页。
+def projectUrl = 'https://github.com/zhangxiaobin123456/XbUtils'
+// Git仓库的url。
+def gitUrl = 'git@github.com:zhangxiaobin123456/XbUtils.git'
+//唯一包名
+group = "com.xb"
+
+install {
+    repositories.mavenInstaller {
+        // 生成pom.xml和参数
+        pom {
+            project {
+                packaging 'aar'
+                name 'XbUtils'//项目名称。
+                description 'Android related tools.'
+                url projectUrl
+
+                // 软件开源协议
+                licenses {
+                    license {
+                        name 'The Apache Software License, Version 2.0'
+                        url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                    }
+                }
+
+
+                developers {
+                    developer {
+                        id 'zhangxiaobin'
+                        name 'zhangxiaobin'
+                        email 'zhangxiaobinqwer@gmail.com'
+                    }
+                }
+
+
+                scm {
+                    connection gitUrl // Git仓库地址。
+                    developerConnection gitUrl // Git仓库地址。
+                    url projectUrl // 项目主页。
+                }
+            }
+        }
+    }
+}
+
+// 生成jar包的task
+task sourcesJar(type: Jar) {
+    from android.sourceSets.main.java.srcDirs
+    classifier = 'sources'
+}
+
+// 生成jarDoc的task
+task javadoc(type: Javadoc) {
+    source = android.sourceSets.main.java.srcDirs
+    classpath += project.files(android.getBootClasspath().join(File.pathSeparator))
+    // destinationDir = file("../javadoc/")
+    failOnError false // 忽略注释语法错误
+}
+// 生成javaDoc的jar
+task javadocJar(type: Jar, dependsOn: javadoc) {
+    classifier = 'javadoc'
+    from javadoc.destinationDir
+}
+artifacts {
+    archives javadocJar
+    archives sourcesJar
+}
+
+Properties properties = new Properties()
+properties.load(project.rootProject.file('local.properties').newDataInputStream())
+bintray {
+    user = properties.getProperty("bintray.user") // Bintray的用户名。
+    key = properties.getProperty("bintray.apikey") // Bintray保存的ApiKey。
+
+    configurations = ['archives']
+    pkg {
+        repo = "xb"  // 上传到创建的仓库
+        name = "XbUtils"  // 发布到Bintray上的项目名字
+        userOrg = user
+        websiteUrl = projectUrl
+        vcsUrl = gitUrl
+        licenses = ["Apache-2.0"]
+        publish = true // 是否是公开项目。
+    }
 }
